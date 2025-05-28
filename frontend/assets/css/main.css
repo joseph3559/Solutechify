@@ -1,0 +1,15 @@
+/* Main application styles */
+:root {
+  --primary-color: #3B82F6;
+  --secondary-color: #1E40AF;
+}
+
+/* Global styles */
+body {
+  @apply antialiased;
+}
+
+/* Dark mode styles */
+.dark body {
+  @apply bg-slate-900;
+} 

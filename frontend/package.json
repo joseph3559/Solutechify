@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "event-management-frontend",
   "private": true,
   "type": "module",
   "scripts": {
@@ -7,11 +7,41 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
+    "@heroicons/vue": "^2.2.0",
+    "@vuelidate/core": "^2.0.3",
+    "@vuelidate/validators": "^2.0.4",
+    "@vueuse/core": "^10.11.1",
+    "axios": "^1.9.0",
+    "vue": "^3.4.19",
+    "vue-router": "^4.3.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@nuxt/kit": "^3.17.4",
+    "@nuxtjs/color-mode": "^3.5.2",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@pinia/nuxt": "^0.11.0",
+    "@tailwindcss/forms": "^0.5.10",
+    "@tailwindcss/typography": "^0.5.16",
+    "@types/node": "^20.17.51",
+    "@types/tailwindcss": "^3.0.11",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.22.0",
     "nuxt": "^3.17.4",
-    "vue": "^3.5.15",
-    "vue-router": "^4.5.1"
+    "pinia": "^3.0.2",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3",
+    "vue-tsc": "^2.2.10"
+  },
+  "engines": {
+    "node": ">=20.0.0"
   }
 }
