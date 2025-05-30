@@ -98,55 +98,106 @@
       </div>
     </section>
 
-    <section id="pricing" class="py-16 md:py-24 bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900 relative overflow-hidden">
+    <section id="pricing" class="py-24 md:py-32 bg-gradient-to-b from-slate-50 to-white dark:from-slate-800 dark:to-slate-900 relative overflow-visible">
+      <!-- Background Elements -->
       <div class="absolute inset-0 bg-grid-pattern opacity-5"></div>
+      <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-indigo-500/5"></div>
+      
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div class="text-center">
-          <h2 class="text-base text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 font-semibold tracking-wide uppercase">Pricing</h2>
-          <p class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+        <!-- Section Header -->
+        <div class="text-center mb-20">
+          <h2 class="inline-flex items-center justify-center text-base text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 font-semibold tracking-wide uppercase animate-fade-in px-4 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 mb-4">
+            Pricing Plans
+          </h2>
+          <p class="mt-2 text-4xl sm:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-white animate-fade-in bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-slate-200">
             Simple, transparent pricing
           </p>
-          <p class="mt-4 max-w-2xl text-xl text-gray-600 dark:text-slate-300 mx-auto">
+          <p class="mt-6 max-w-2xl text-xl text-gray-600 dark:text-slate-300 mx-auto animate-fade-in-delayed">
             Choose the plan that empowers your organization. No hidden fees, ever.
           </p>
         </div>
 
-        <div class="mt-12 md:mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 items-stretch">
+        <!-- Pricing Cards -->
+        <div class="relative mt-8 md:mt-16 grid grid-cols-1 gap-y-12 md:gap-y-0 gap-x-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-x-8 lg:mx-4">
           <div v-for="(plan, index) in plans" :key="plan.name"
                :class="[
-                 'pricing-card backdrop-blur-sm bg-white/40 dark:bg-slate-800/40 rounded-2xl p-8 flex flex-col transition-all duration-500 ease-out hover:transform hover:-translate-y-2',
-                 index === 1 ? 'ring-2 ring-blue-500 dark:ring-blue-400 lg:scale-105 relative shadow-2xl pt-12' : 'ring-1 ring-gray-200 dark:ring-slate-700 shadow-xl hover:shadow-2xl',
+                 'pricing-card relative group',
+                 index === 1 ? 'md:-mt-8 lg:-mt-12 z-10' : 'z-0',
                  `animate-fade-in-up-${index}`
                ]">
-            <div v-if="index === 1" class="absolute -top-4 left-1/2 -translate-x-1/2">
-              <span class="inline-flex items-center px-4 py-1 rounded-full text-sm font-bold tracking-wider uppercase bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg">
-                Most Popular
-              </span>
-            </div>
-            
-            <h3 class="text-2xl font-bold text-gray-900 dark:text-white">{{ plan.name }}</h3>
-            <p class="mt-4 text-gray-600 dark:text-slate-300 flex-grow">{{ plan.description }}</p>
-            <div class="mt-8 flex items-baseline">
-              <span class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">KSH {{ plan.price.toLocaleString() }}</span>
-              <span class="ml-2 text-base text-gray-500 dark:text-slate-400">/month</span>
-            </div>
-            <ul role="list" class="mt-8 space-y-4">
-              <li v-for="featureItem in plan.features" :key="featureItem" class="flex items-start">
-                <CheckCircleIcon class="flex-shrink-0 h-6 w-6 text-green-500 dark:text-green-400" aria-hidden="true" />
-                <span class="ml-3 text-gray-600 dark:text-slate-300">{{ featureItem }}</span>
-              </li>
-            </ul>
-            <div class="mt-10">
-              <NuxtLink :to="plan.price === 0 ? '/register' : '/register?plan=' + plan.name.toLowerCase()">
-                <CommonButton 
-                  :variant="index === 1 ? 'primary' : 'outline'" 
-                  class="w-full py-3 transform hover:scale-105 transition-transform duration-300"
-                  :class="index === 1 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700' : ''">
-                  {{ plan.price === 0 ? 'Get Started Free' : 'Choose Plan' }}
-                </CommonButton>
-              </NuxtLink>
+            <!-- Card Content -->
+            <div :class="[
+              'h-full backdrop-blur-sm rounded-3xl transition-all duration-500 ease-out group-hover:transform group-hover:-translate-y-2',
+              index === 1 
+                ? 'bg-white dark:bg-slate-800 ring-2 ring-blue-500/50 dark:ring-blue-400/50 shadow-2xl' 
+                : 'bg-white/90 dark:bg-slate-800/90 ring-1 ring-gray-200/50 dark:ring-slate-700/50 shadow-xl group-hover:shadow-2xl'
+            ]">
+              <div class="p-8">
+                <!-- Most Popular Badge -->
+                <div v-if="index === 1" class="mb-8">
+                  <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold tracking-wider uppercase bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md transform transition-all duration-300 group-hover:shadow-lg">
+                    ⭐ Most Popular
+                  </span>
+                </div>
+
+                <!-- Plan Name & Description -->
+                <div class="pb-8 mb-8 border-b border-gray-100 dark:border-slate-700/50">
+                  <h3 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-slate-200 mb-3">
+                    {{ plan.name }}
+                  </h3>
+                  <p class="text-gray-600 dark:text-slate-300">{{ plan.description }}</p>
+                </div>
+
+                <!-- Pricing -->
+                <div class="flex items-baseline mb-8">
+                  <div class="flex items-end">
+                    <span class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+                      KSH {{ plan.price.toLocaleString() }}
+                    </span>
+                    <span class="ml-2 text-base text-gray-500 dark:text-slate-400 mb-1">/month</span>
+                  </div>
+                </div>
+
+                <!-- Features List -->
+                <ul role="list" class="space-y-4 min-h-[320px]">
+                  <li v-for="featureItem in plan.features" :key="featureItem" 
+                      class="flex items-start transform transition-all duration-300 hover:translate-x-1">
+                    <div class="flex-shrink-0 p-1">
+                      <CheckCircleIcon class="h-6 w-6 text-green-500 dark:text-green-400" aria-hidden="true" />
+                    </div>
+                    <span class="ml-3 text-gray-600 dark:text-slate-300">{{ featureItem }}</span>
+                  </li>
+                </ul>
+
+                <!-- Action Button -->
+                <div class="mt-10">
+                  <NuxtLink :to="plan.price === 0 ? '/register' : '/register?plan=' + plan.name.toLowerCase()">
+                    <CommonButton 
+                      :variant="index === 1 ? 'primary' : 'outline'" 
+                      class="w-full py-4 text-base font-medium transform transition-all duration-300"
+                      :class="[
+                        index === 1 
+                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl hover:scale-[1.02]' 
+                          : 'hover:bg-blue-50 dark:hover:bg-slate-700/50 hover:scale-[1.02]'
+                      ]">
+                      {{ plan.price === 0 ? 'Get Started Free' : 'Choose Plan' }}
+                    </CommonButton>
+                  </NuxtLink>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="mt-20 text-center">
+          <p class="text-gray-600 dark:text-slate-300 text-lg">
+            Need a custom plan? 
+            <NuxtLink to="/contact" class="inline-flex items-center text-blue-600 dark:text-blue-400 font-medium hover:underline">
+              Contact our sales team
+              <ArrowRightIcon class="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+            </NuxtLink>
+          </p>
         </div>
       </div>
     </section>
@@ -260,6 +311,7 @@ import {
   ExclamationCircleIcon,
   ArrowPathIcon,
   ChatBubbleLeftIcon,
+  ArrowRightIcon,
 } from '@heroicons/vue/24/outline'
 
 useHead({
@@ -490,5 +542,43 @@ const handleRefresh = async () => {
   -webkit-mask-composite: xor;
   mask-composite: exclude;
   pointer-events: none;
+}
+
+.pricing-card {
+  isolation: isolate;
+  backdrop-filter: blur(20px);
+}
+
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.1), transparent 70%);
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.pricing-card {
+  animation: float-slow 6s ease-in-out infinite;
+  animation-delay: calc(var(--card-index) * 2s);
+}
+
+.pricing-card:nth-child(1) { --card-index: 0; }
+.pricing-card:nth-child(2) { --card-index: 1; }
+.pricing-card:nth-child(3) { --card-index: 2; }
+
+@keyframes scale-102 {
+  to {
+    transform: scale(1.02);
+  }
+}
+
+.hover\:scale-102:hover {
+  animation: scale-102 0.2s ease-out forwards;
 }
 </style> 
