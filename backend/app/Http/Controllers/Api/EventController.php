@@ -65,10 +65,23 @@ class EventController extends Controller
 
     public function publicEvents(Organization $organization)
     {
-        $events = $organization->events()
-            ->where('date', '>=', now())
+        $events = Event::where('organization_id', $organization->id)
+            ->where('is_active', true)
             ->orderBy('date')
             ->get();
         return response()->json($events);
+    }
+
+    /**
+     * Display the specified event for public viewing
+     */
+    public function publicShow(Organization $organization, Event $event)
+    {
+        // Ensure the event belongs to the organization and is active
+        if ($event->organization_id !== $organization->id || !$event->is_active) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        return response()->json($event);
     }
 } 

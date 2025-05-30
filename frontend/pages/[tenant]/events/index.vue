@@ -39,10 +39,12 @@
               <CurrencyDollarIcon class="h-4 w-4 mr-2" />
               ${{ event.price }}
             </p>
-            <p class="flex items-center text-gray-600 text-sm">
-              <UsersIcon class="h-4 w-4 mr-2" />
-              {{ event.registeredAttendees }}/{{ event.maxAttendees }} spots
-            </p>
+            <div class="flex items-center space-x-4 text-sm text-gray-500">
+              <div class="flex items-center">
+                <UsersIcon class="h-5 w-5 mr-1" />
+                <span>{{ event.current_attendees }}/{{ event.max_attendees }} attendees</span>
+              </div>
+            </div>
           </div>
           <div class="mt-4">
             <NuxtLink :to="`/${route.params.tenant}/events/${event.id}`">
@@ -65,17 +67,18 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { CalendarIcon, MapPinIcon, CurrencyDollarIcon, UsersIcon } from '@heroicons/vue/24/outline'
 import CommonButton from '@/components/Common/Button.vue'
-import { eventService, type Event } from '@/services/events'
+import { useEventsService } from '@/services/events'
+import type { Event } from '@/types'
 
 definePageMeta({
   layout: 'default'
 })
 
 const route = useRoute()
-const tenant = route.params.tenant as string
+const eventsService = useEventsService()
 const events = ref<Event[]>([])
 const loading = ref(true)
-const error = ref<string | null>(null)
+const error = ref('')
 
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString('en-US', {
@@ -91,10 +94,9 @@ const formatDate = (date: string) => {
 const fetchEvents = async () => {
   try {
     loading.value = true
-    events.value = await eventService.getPublicEvents(tenant)
-  } catch (err) {
-    error.value = 'Failed to load events. Please try again later.'
-    console.error('Error fetching events:', err)
+    events.value = await eventsService.getEvents()
+  } catch (err: any) {
+    error.value = err.message || 'Failed to load events'
   } finally {
     loading.value = false
   }
@@ -104,7 +106,13 @@ const refreshEvents = () => {
   fetchEvents()
 }
 
-onMounted(() => {
-  fetchEvents()
+onMounted(async () => {
+  try {
+    events.value = await eventsService.getEvents()
+  } catch (err: any) {
+    error.value = err.message || 'Failed to load events'
+  } finally {
+    loading.value = false
+  }
 })
 </script>

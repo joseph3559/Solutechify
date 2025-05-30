@@ -129,7 +129,7 @@
 
             <!-- Desktop Auth Buttons -->
             <div class="hidden md:flex items-center space-x-4">
-              <template v-if="!authStore.isAuthenticated">
+              <template v-if="!isAuthenticated">
                 <NuxtLink 
                   to="/login"
                   class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
@@ -148,7 +148,7 @@
                   <button 
                     class="flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                   >
-                    {{ authStore.user?.name }}
+                    {{ currentUser?.name }}
                     <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
@@ -281,7 +281,7 @@
                 Contact
               </NuxtLink>
               <div class="pt-4 pb-3 border-t border-gray-200 dark:border-slate-700">
-                <template v-if="!authStore.isAuthenticated">
+                <template v-if="!isAuthenticated">
                   <NuxtLink 
                     to="/login"
                     class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
@@ -297,7 +297,7 @@
                 </template>
                 <template v-else>
                   <div class="px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300">
-                    {{ authStore.user?.name }}
+                    {{ currentUser?.name }}
                   </div>
                   <NuxtLink 
                     to="/dashboard"
@@ -341,16 +341,24 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const colorMode = useColorMode()
+
+// Reactive state
 const isMobileMenuOpen = ref(false)
 const showFeaturesMenu = ref(false)
 const showMobileFeaturesMenu = ref(false)
 const showUserMenu = ref(false)
+
+// Computed properties
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+const currentUser = computed(() => authStore.currentUser)
+const isAdmin = computed(() => authStore.isAdmin)
 
 const features = [
   { name: 'Event Management', path: '/features/event-management' },
@@ -364,15 +372,22 @@ const toggleColorMode = () => {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 }
 
+const handleLogout = async () => {
+  try {
+    await authStore.logout()
+    router.push('/auth')
+  } catch (error) {
+    console.error('Logout error:', error)
+  } finally {
+    isMobileMenuOpen.value = false
+    showUserMenu.value = false
+  }
+}
+
 // Initialize authentication state
 onMounted(() => {
   authStore.initAuth()
 })
-
-async function handleLogout() {
-  authStore.logout()
-  router.push('/login')
-}
 </script>
 
 <style>

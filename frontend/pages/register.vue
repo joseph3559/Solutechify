@@ -103,12 +103,11 @@ async function handleSubmit() {
   error.value = ''
 
   try {
-    await authStore.register(
-      name.value,
-      email.value,
-      password.value,
-      passwordConfirmation.value
-    )
+    await authStore.register({
+      name: name.value,
+      email: email.value,
+      password: password.value
+    })
     router.push('/')
   } catch (err: any) {
     error.value = err.message || 'Failed to register'

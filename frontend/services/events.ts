@@ -1,83 +1,37 @@
-import api from './api'
+import { useApi } from './api'
+import type { Event, EventRegistrationData } from '@/types'
 
-export interface Event {
-  id: number
-  title: string
-  description: string
-  date: string
-  venue: string
-  price: number
-  maxAttendees: number
-  registeredAttendees: number
-  image?: string
-  organizationId?: number
-}
+export function useEventsService() {
+  const api = useApi()
 
-export interface EventRegistration {
-  name: string
-  email: string
-  phone: string
-}
+  return {
+    async getEvents() {
+      const response = await api.get<Event[]>('/events')
+      return response.data
+    },
 
-// Public endpoints that don't require authentication
-const publicApi = api.create({
-  baseURL: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api'
-})
+    async getEvent(id: number) {
+      const response = await api.get<Event>(`/events/${id}`)
+      return response.data
+    },
 
-export const eventService = {
-  // Public methods that don't require authentication
-  async getPublicEvents(organizationId: string | number) {
-    const response = await publicApi.get(`/organizations/${organizationId}/events`)
-    return response.data
-  },
+    async createEvent(data: Partial<Event>) {
+      const response = await api.post<Event>('/events', data)
+      return response.data
+    },
 
-  async getPublicEventDetails(organizationId: string | number, eventId: string | number) {
-    const response = await publicApi.get(`/organizations/${organizationId}/events/${eventId}`)
-    return response.data
-  },
+    async updateEvent(id: number, data: Partial<Event>) {
+      const response = await api.put<Event>(`/events/${id}`, data)
+      return response.data
+    },
 
-  // Protected methods that require authentication
-  async registerForEvent(organizationId: string | number, eventId: string | number, registrationData: any) {
-    const response = await api.post(`/organizations/${organizationId}/events/${eventId}/register`, registrationData)
-    return response.data
-  },
+    async deleteEvent(id: number) {
+      await api.delete(`/events/${id}`)
+    },
 
-  async createEvent(organizationId: string | number, eventData: Partial<Event>) {
-    const response = await api.post(`/organizations/${organizationId}/events`, eventData)
-    return response.data
-  },
-
-  async updateEvent(organizationId: string | number, eventId: string | number, eventData: Partial<Event>) {
-    const response = await api.put(`/organizations/${organizationId}/events/${eventId}`, eventData)
-    return response.data
-  },
-
-  async deleteEvent(organizationId: string | number, eventId: string | number) {
-    const response = await api.delete(`/organizations/${organizationId}/events/${eventId}`)
-    return response.data
-  },
-
-  // Get all events for a tenant
-  async getEvents(tenant: string) {
-    const response = await api.get<Event[]>(`/${tenant}/events`)
-    return response.data
-  },
-
-  // Get featured events for a tenant
-  async getFeaturedEvents(tenant: string) {
-    const response = await api.get<Event[]>(`/${tenant}/events/featured`)
-    return response.data
-  },
-
-  // Get a single event
-  async getEvent(tenant: string, eventId: string | number) {
-    const response = await api.get<Event>(`/${tenant}/events/${eventId}`)
-    return response.data
-  },
-
-  // Get event statistics
-  async getEventStats(tenant: string) {
-    const response = await api.get(`/${tenant}/events/stats`)
-    return response.data
+    async registerForEvent(eventId: number, data: EventRegistrationData) {
+      const response = await api.post(`/events/${eventId}/register`, data)
+      return response.data
+    }
   }
 } 

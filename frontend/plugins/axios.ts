@@ -1,28 +1,29 @@
 import axios from 'axios'
 import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
 import { useAuthStore } from '@/stores/auth'
-import { authService } from '@/services/auth'
+import { useAuthService } from '@/services/auth'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const config = useRuntimeConfig()
-  
-  const axiosInstance = axios.create({
-    baseURL: config.public.apiBase as string,
-    timeout: 10000,
+  const authStore = useAuthStore()
+  const authService = useAuthService()
+
+  // Create axios instance
+  const api = axios.create({
+    baseURL: config.public.apiBase,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
     }
   })
 
   // Request interceptor
-  axiosInstance.interceptors.request.use(
+  api.interceptors.request.use(
     (config) => {
       const token = authService.getToken()
-      
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
-      
       return config
     },
     (error) => {
@@ -31,23 +32,20 @@ export default defineNuxtPlugin((nuxtApp) => {
   )
 
   // Response interceptor
-  axiosInstance.interceptors.response.use(
+  api.interceptors.response.use(
     (response) => response,
     async (error) => {
-      const authStore = useAuthStore()
-      
       if (error.response?.status === 401) {
-        await authStore.logout()
-        return Promise.reject(new Error('Session expired. Please login again.'))
+        authStore.clearAuth()
+        navigateTo('/auth')
       }
-      
-      return Promise.reject(error.response?.data?.message || error.message || 'An error occurred')
+      return Promise.reject(error)
     }
   )
 
   return {
     provide: {
-      axios: axiosInstance
+      axios: api
     }
   }
 })

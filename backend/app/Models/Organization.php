@@ -5,28 +5,33 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
-use Stancl\Tenancy\Contracts\TenantWithDatabase;
-use Stancl\Tenancy\Database\Concerns\HasDatabase;
-use Stancl\Tenancy\Database\Concerns\HasDomains;
 
-class Organization extends BaseTenant implements TenantWithDatabase
+class Organization extends Model
 {
-    use HasFactory, SoftDeletes, HasDatabase, HasDomains;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'name',
         'slug',
-        'description',
-        'logo_url',
-        'primary_color',
-        'secondary_color',
+        'domain',
+        'email',
+        'phone',
+        'address',
+        'logo',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
     public function users()
     {
@@ -36,10 +41,5 @@ class Organization extends BaseTenant implements TenantWithDatabase
     public function events()
     {
         return $this->hasMany(Event::class);
-    }
-
-    public function getRouteKeyName()
-    {
-        return 'slug';
     }
 }

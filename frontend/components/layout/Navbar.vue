@@ -185,6 +185,17 @@ const navigationItems = [
   { name: 'Contact', href: '#contact' },
 ]
 
+const handleLogout = async () => {
+  try {
+    await authStore.logout()
+    router.push('/auth')
+  } catch (error) {
+    console.error('Logout error:', error)
+  } finally {
+    isOpen.value = false
+  }
+}
+
 const scrollToSection = async (hash: string) => {
   // If not on home page, navigate to home page first
   if (route.path !== '/') {
@@ -200,12 +211,6 @@ const scrollToSection = async (hash: string) => {
       block: 'start'
     })
   }
-}
-
-const handleLogout = () => {
-  authStore.logout()
-  router.push('/')
-  isOpen.value = false
 }
 
 // Handle initial hash navigation

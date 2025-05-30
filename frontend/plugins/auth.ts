@@ -13,18 +13,36 @@ export default defineNuxtPlugin(async () => {
 
   // Watch for route changes
   router.beforeEach(async (to: RouteLocationNormalized) => {
-    // Public routes that don't require authentication
-    const publicRoutes = ['/', '/login', '/register', '/events']
-    
     // Allow access to home page sections
     if (to.path === '/' || to.hash.startsWith('#')) {
       return true
     }
     
-    if (publicRoutes.includes(to.path)) {
+    // Check if route is a public route (no authentication required)
+    const isPublicRoute = (
+      to.path === '/' ||
+      to.path === '/login' ||
+      to.path === '/register' ||
+      to.path.startsWith('/admin/login') ||
+      // Organization pages (public)
+      to.path.match(/^\/[^\/]+$/) ||  // /{organization}
+      // Event pages (public)
+      to.path.match(/^\/[^\/]+\/events$/) ||  // /{organization}/events
+      to.path.match(/^\/[^\/]+\/events\/\d+$/)  // /{organization}/events/{id}
+    )
+    
+    if (isPublicRoute) {
       // Redirect to home if already authenticated and trying to access login/register
       if (authStore.isAuthenticated && ['/login', '/register'].includes(to.path)) {
         return '/'
+      }
+      return true
+    }
+
+    // For admin routes, check authentication
+    if (to.path.startsWith('/admin') && to.path !== '/admin/login') {
+      if (!authStore.isAuthenticated) {
+        return `/admin/login?redirect=${encodeURIComponent(to.fullPath)}`
       }
       return true
     }

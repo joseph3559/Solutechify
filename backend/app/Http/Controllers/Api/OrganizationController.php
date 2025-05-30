@@ -11,7 +11,12 @@ class OrganizationController extends Controller
 {
     public function index()
     {
-        $organizations = auth()->user()->organizations;
+        // Public endpoint - return all active organizations
+        $organizations = Organization::where('is_active', true)
+            ->withCount('events')
+            ->orderBy('name')
+            ->get();
+            
         return response()->json($organizations);
     }
 
@@ -32,7 +37,11 @@ class OrganizationController extends Controller
 
     public function show(Organization $organization)
     {
-        $this->authorize('view', $organization);
+        // Public endpoint - show organization details
+        if (!$organization->is_active) {
+            return response()->json(['message' => 'Organization not found'], 404);
+        }
+        
         return response()->json($organization);
     }
 

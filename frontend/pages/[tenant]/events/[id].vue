@@ -3,7 +3,7 @@
   <div class="min-h-screen bg-gray-50 py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Loading State -->
-      <div v-if="isLoading" class="flex justify-center items-center py-12">
+      <div v-if="loading" class="flex justify-center items-center py-12">
         <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
 
@@ -144,26 +144,22 @@ import {
   CalendarIcon,
   MapPinIcon,
   CurrencyDollarIcon,
-  UsersIcon
+  UsersIcon,
+  ShareIcon,
+  HeartIcon
 } from '@heroicons/vue/24/outline'
 import CommonButton from '@/components/Common/Button.vue'
-import { eventService, type Event } from '@/services/events'
+import { useEventsService } from '@/services/events'
+import type { Event } from '@/types'
 import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
-const tenant = route.params.tenant as string
-const eventId = route.params.id as string
+const eventsService = useEventsService()
+const authStore = useAuthStore()
 
-const event = ref<Event>({
-  id: 0,
-  title: '',
-  description: '',
-  date: new Date().toISOString(),
-  venue: '',
-  price: 0,
-  maxAttendees: 0,
-  registeredAttendees: 0
-})
+const event = ref<Event | null>(null)
+const loading = ref(true)
+const error = ref('')
 
 const form = ref({
   name: '',
@@ -171,13 +167,9 @@ const form = ref({
   phone: ''
 })
 
-const isLoading = ref(false)
 const isRegistering = ref(false)
-const error = ref<string | null>(null)
 const registrationError = ref<string | null>(null)
 const registrationSuccess = ref<string | null>(null)
-
-const authStore = useAuthStore()
 
 // Form validation rules
 const rules = {
@@ -208,15 +200,16 @@ const formatDate = (date: string) => {
 }
 
 const fetchEvent = async () => {
-  isLoading.value = true
-  error.value = null
+  loading.value = true
+  error.value = ''
   
   try {
-    event.value = await eventService.getEvent(tenant, eventId)
-  } catch (e) {
-    error.value = e instanceof Error ? e.message : 'Failed to load event details'
+    const eventId = parseInt(route.params.id as string)
+    event.value = await eventsService.getEvent(eventId)
+  } catch (err: any) {
+    error.value = err.message || 'Failed to load event'
   } finally {
-    isLoading.value = false
+    loading.value = false
   }
 }
 
@@ -230,7 +223,7 @@ const handleRegistration = async () => {
   isRegistering.value = true
   
   try {
-    await eventService.registerForEvent(tenant, eventId, form.value)
+    await eventsService.registerForEvent(event.value?.id || 0, form.value)
     registrationSuccess.value = 'Registration successful! Check your email for confirmation.'
     form.value = { name: '', email: '', phone: '' }
     // Refresh event details to update attendance count
@@ -243,8 +236,8 @@ const handleRegistration = async () => {
 }
 
 // Initialize form with user data if available
-onMounted(() => {
-  fetchEvent()
+onMounted(async () => {
+  await fetchEvent()
   if (authStore.isAuthenticated && authStore.user) {
     form.value = {
       name: authStore.user.name || '',

@@ -11,9 +11,11 @@ class CheckOrganizationAccess
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $organizationSlug = $request->route('tenant');
-        $organization = Organization::where('slug', $organizationSlug)->first();
-
+        $user = $request->user();
+        
+        // Get organization from route parameter
+        $organization = $request->route('organization');
+        
         if (!$organization) {
             return response()->json(['message' => 'Organization not found'], 404);
         }
@@ -22,13 +24,10 @@ class CheckOrganizationAccess
             return response()->json(['message' => 'Organization is not active'], 403);
         }
 
-        // If user is authenticated, check if they belong to the organization
-        if ($request->user() && $request->user()->organization_id !== $organization->id) {
+        // Check if authenticated user belongs to this organization
+        if ($user && $user->organization_id !== $organization->id) {
             return response()->json(['message' => 'Unauthorized access to this organization'], 403);
         }
-
-        // Add organization to the request for later use
-        $request->merge(['organization' => $organization]);
 
         return $next($request);
     }

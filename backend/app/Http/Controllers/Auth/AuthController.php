@@ -45,16 +45,28 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'organization_id' => 'required|exists:organizations,id',
+            'password' => 'required|string|min:8',
+            'organization_id' => 'nullable|exists:organizations,id',
         ]);
+
+        // If no organization_id provided, create a default one or use the first available
+        $organizationId = $request->organization_id;
+        if (!$organizationId) {
+            $organization = \App\Models\Organization::first();
+            if (!$organization) {
+                return response()->json([
+                    'message' => 'No organizations available. Please contact administrator.',
+                ], 422);
+            }
+            $organizationId = $organization->id;
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'admin',
-            'organization_id' => $request->organization_id,
+            'organization_id' => $organizationId,
         ]);
 
         $token = $user->createToken('auth-token')->plainTextToken;

@@ -21,11 +21,13 @@ class Event extends Model
         'price',
         'max_attendees',
         'current_attendees',
+        'is_active',
     ];
 
     protected $casts = [
         'date' => 'datetime',
         'price' => 'decimal:2',
+        'is_active' => 'boolean',
     ];
 
     public function organization()
