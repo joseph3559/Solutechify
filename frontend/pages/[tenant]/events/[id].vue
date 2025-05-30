@@ -17,26 +17,26 @@
 
       <!-- Event Details -->
       <div v-else class="bg-white shadow-sm rounded-lg p-6 mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">{{ event.title }}</h1>
+        <h1 class="text-3xl font-bold text-gray-900">{{ event?.title }}</h1>
         <div class="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div>
-            <p class="text-gray-500 mt-2">{{ event.description }}</p>
+            <p class="text-gray-500 mt-2">{{ event?.description }}</p>
             <div class="mt-4 space-y-2">
               <p class="flex items-center text-gray-600">
                 <CalendarIcon class="h-5 w-5 mr-2" />
-                {{ formatDate(event.date) }}
+                {{ event?.date ? formatDate(event.date) : '' }}
               </p>
               <p class="flex items-center text-gray-600">
                 <MapPinIcon class="h-5 w-5 mr-2" />
-                {{ event.venue }}
+                {{ event?.venue }}
               </p>
               <p class="flex items-center text-gray-600">
                 <CurrencyDollarIcon class="h-5 w-5 mr-2" />
-                KSH {{ event.price.toLocaleString() }}
+                KSH {{ event?.price?.toLocaleString() }}
               </p>
               <p class="flex items-center text-gray-600">
                 <UsersIcon class="h-5 w-5 mr-2" />
-                {{ event.registeredAttendees }} / {{ event.maxAttendees }} spots filled
+                {{ event?.current_attendees }} / {{ event?.max_attendees }} spots filled
               </p>
             </div>
           </div>
@@ -112,12 +112,12 @@
               <CommonButton
                 type="submit"
                 class="w-full"
-                :disabled="isRegistering || event.registeredAttendees >= event.maxAttendees || v$.$invalid"
+                :disabled="isRegistering || (event?.current_attendees ?? 0) >= (event?.max_attendees ?? 0) || v$.$invalid"
               >
                 {{ isRegistering ? 'Registering...' : 'Register Now' }}
               </CommonButton>
 
-              <p v-if="event.registeredAttendees >= event.maxAttendees" class="text-sm text-red-600 text-center">
+              <p v-if="event?.current_attendees && event?.max_attendees && event.current_attendees >= event.max_attendees" class="text-sm text-red-600 text-center">
                 This event is fully booked
               </p>
             </form>

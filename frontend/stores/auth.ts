@@ -21,7 +21,7 @@ export const useAuthStore = defineStore('auth', {
     setAuth(token: string, user: User) {
       this.token = token
       this.user = user
-      this.isAuthenticated = true
+        this.isAuthenticated = true
       
       // Store in localStorage for persistence
       if (process.client) {
@@ -43,7 +43,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async initAuth() {
-      if (process.client) {
+        if (process.client) {
         const token = localStorage.getItem('auth_token')
         const userStr = localStorage.getItem('auth_user')
         

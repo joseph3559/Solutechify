@@ -8,7 +8,8 @@ export function createApi() {
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json'
-    }
+    },
+    timeout: 10000 // 10 second timeout
   })
 }
 
@@ -26,7 +27,10 @@ export function useApi() {
       return config
     },
     (error) => {
-      return Promise.reject(error)
+      console.error('Request Error:', error)
+      return Promise.reject({
+        message: 'Failed to send request. Please check your internet connection.'
+      })
     }
   )
 
@@ -34,12 +38,49 @@ export function useApi() {
   api.interceptors.response.use(
     (response) => response,
     (error) => {
-      if (error.response?.status === 401) {
+      console.error('API Error:', error)
+
+      // Handle network errors
+      if (!error.response) {
+        return Promise.reject({
+          message: error.message === 'Network Error' 
+            ? 'Unable to connect to the server. Please check your internet connection.'
+            : error.message === 'timeout of 10000ms exceeded'
+            ? 'Request timed out. Please try again.'
+            : 'An unexpected error occurred. Please try again.'
+        })
+      }
+
+      // Handle authentication errors
+      if (error.response.status === 401) {
         localStorage.removeItem('auth_token')
         localStorage.removeItem('auth_user')
-        window.location.href = '/auth'
+        window.location.href = '/admin/login?error=session_expired'
+        return Promise.reject({
+          message: 'Your session has expired. Please log in again.'
+        })
       }
-      return Promise.reject(error)
+
+      // Handle other common HTTP errors
+      const errorMessages: Record<number, string> = {
+        400: 'Invalid request. Please check your input.',
+        403: 'You do not have permission to perform this action.',
+        404: 'The requested resource was not found.',
+        422: 'Validation failed. Please check your input.',
+        500: 'Server error. Our team has been notified.',
+        503: 'Service temporarily unavailable. Please try again later.'
+      }
+
+      const status = error.response.status as keyof typeof errorMessages
+      const message = error.response.data?.message || 
+                     errorMessages[status] || 
+                     'An unexpected error occurred. Please try again.'
+
+      return Promise.reject({
+        status: error.response.status,
+        message,
+        errors: error.response.data?.errors || null
+      })
     }
   )
 
