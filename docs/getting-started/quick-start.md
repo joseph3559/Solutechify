@@ -167,7 +167,7 @@ npm run preview
 ## Getting Help
 
 - [Join our Discord](https://discord.gg/solutechify)
-- [GitHub Issues](https://github.com/yourusername/solutechify/issues)
+- [GitHub Issues](https://github.com/joseph3559/solutechify/issues)
 - [Laravel Documentation](https://laravel.com/docs/11.x)
 - [Nuxt 3 Documentation](https://nuxt.com/docs)
 - Email: scottjoe3559@gmail.com 

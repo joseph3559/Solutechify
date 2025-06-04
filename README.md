@@ -526,7 +526,7 @@ Supports deployment on:
 # Production environment variables
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://your-domain.com
+APP_URL=https://solutechify.com
 
 DB_CONNECTION=pgsql
 DB_HOST=your-db-host
@@ -536,7 +536,7 @@ DB_PASSWORD=your-secure-password
 
 # Additional security settings
 SESSION_SECURE_COOKIE=true
-SANCTUM_STATEFUL_DOMAINS=your-domain.com
+SANCTUM_STATEFUL_DOMAINS=solutechify.com
 ```
 
 ---
@@ -604,9 +604,9 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ### 💬 Getting Help
 
 - **Documentation**: Check this README and inline code comments
-- **Issues**: [GitHub Issues](https://github.com/your-username/event-management-system/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-username/event-management-system/discussions)
-- **Email**: support@your-domain.com
+- **Issues**: [GitHub Issues](https://github.com/joseph3559/event-management-system/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/joseph3559/event-management-system/discussions)
+- **Email**: support@solutechify.com
 
 ### 🐛 Bug Reports
 
