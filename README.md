@@ -11,7 +11,7 @@
 
 *A comprehensive, scalable multi-tenant event management platform built with modern web technologies*
 
-[🚀 Demo](#-demo) • [📋 Features](#-features) • [🛠️ Installation](#️-installation) • [📚 API Documentation](#-api-documentation) • [🤝 Contributing](#-contributing)
+[🚀 Demo](https://solutechify.vercel.app/) • [📋 Features](https://github.com/joseph3559/Solutechify/blob/main/docs/architecture/multi-tenant.md) • [🛠️ Installation](https://github.com/joseph3559/Solutechify/blob/main/docs/getting-started/quick-start.md) • [📚 API Documentation](https://github.com/joseph3559/Solutechify/blob/main/docs/api-reference/events.md) • [🤝 Contributing](#-contributing)
 
 </div>
 
