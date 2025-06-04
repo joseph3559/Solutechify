@@ -1,6 +1,27 @@
 import { defineStore } from 'pinia'
+import { navigateTo } from 'nuxt/app'
 import type { User, AuthState, LoginResponse, RegisterData } from '@/types'
 import { useAuthService } from '~/services/auth'
+import { useNotification } from '~/composables/useNotification'
+
+const redirectAfterAuth = async (user: User, isRegistration = false) => {
+  console.log('Redirecting user after auth:', { user, isRegistration })
+  
+  // Small delay to ensure state is updated and notifications are shown
+  await new Promise(resolve => setTimeout(resolve, 100))
+  
+  // Determine the appropriate dashboard based on user role and context
+  let targetPath = '/user/dashboard' // Default fallback for regular users
+  
+  if (user.role === 'admin' || user.role === 'organizer' || user.role === 'super_admin') {
+    targetPath = '/admin/dashboard'
+  } else {
+    targetPath = '/user/dashboard'
+  }
+  
+  console.log('Navigating to:', targetPath)
+  await navigateTo(targetPath)
+}
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
@@ -13,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     currentUser: (state) => state.user,
-    isAdmin: (state) => state.user?.role === 'admin',
+    isAdmin: (state) => state.user ? ['admin', 'super_admin', 'organizer'].includes(state.user.role) : false,
     userOrganization: (state) => state.user?.organization
   },
 
@@ -21,7 +42,7 @@ export const useAuthStore = defineStore('auth', {
     setAuth(token: string, user: User) {
       this.token = token
       this.user = user
-        this.isAuthenticated = true
+      this.isAuthenticated = true
       
       // Store in localStorage for persistence
       if (process.client) {
@@ -43,7 +64,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async initAuth() {
-        if (process.client) {
+      if (process.client) {
         const token = localStorage.getItem('auth_token')
         const userStr = localStorage.getItem('auth_user')
         
@@ -65,16 +86,37 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true
       this.error = null
       const authService = useAuthService()
+      const { success, error } = useNotification()
       
       try {
         const response = await authService.login({ email, password })
         this.setAuth(response.token, response.user)
-        return response
-      } catch (error: any) {
-        this.error = error.message || 'Failed to login'
-        throw error
-      } finally {
+        
+        // Show success message
+        success(
+          'Welcome back!', 
+          `Successfully logged in as ${response.user.name}`,
+          { duration: 3000 }
+        )
+        
+        // Redirect to appropriate dashboard after setting loading to false
         this.loading = false
+        await redirectAfterAuth(response.user, false)
+        
+        return response
+        
+      } catch (err: any) {
+        this.error = err.message || 'Failed to login'
+        
+        // Show error message
+        error(
+          'Login Failed', 
+          err.message || 'Please check your credentials and try again.',
+          { duration: 6000 }
+        )
+        
+        this.loading = false
+        throw err
       }
     },
 
@@ -82,25 +124,58 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true
       this.error = null
       const authService = useAuthService()
+      const { success, error } = useNotification()
       
       try {
         const response = await authService.register(data)
         this.setAuth(response.token, response.user)
-        return response
-      } catch (error: any) {
-        this.error = error.message || 'Failed to register'
-        throw error
-      } finally {
+        
+        // Show success message
+        success(
+          'Account Created Successfully!', 
+          `Welcome to Solutechify Events, ${response.user.name}! Your account is ready to use.`,
+          { duration: 5000 }
+        )
+        
+        // Redirect to appropriate dashboard after setting loading to false
         this.loading = false
+        await redirectAfterAuth(response.user, true)
+        
+        return response
+        
+      } catch (err: any) {
+        this.error = err.message || 'Failed to register'
+        
+        // Show error message
+        error(
+          'Registration Failed', 
+          err.message || 'Please check your information and try again.',
+          { duration: 6000 }
+        )
+        
+        this.loading = false
+        throw err
       }
     },
 
     async logout() {
       const authService = useAuthService()
+      const { success } = useNotification()
+      
       try {
         await authService.logout()
+        
+        // Show success message
+        success(
+          'Logged Out Successfully', 
+          'You have been safely logged out.',
+          { duration: 3000 }
+        )
+      } catch (error) {
+        console.error('Logout error:', error)
       } finally {
         this.clearAuth()
+        await navigateTo('/auth')
       }
     },
 

@@ -20,13 +20,13 @@
               </p>
               <div class="mt-8 sm:mt-10 sm:flex sm:justify-center lg:justify-start animate-fade-in-delayed-2">
                 <div class="rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300">
-                  <NuxtLink to="/register">
+                  <NuxtLink to="/auth">
                     <CommonButton size="lg" class="w-full px-8 py-3 text-base font-medium bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300">Get Started</CommonButton>
                   </NuxtLink>
                 </div>
                 <div class="mt-3 sm:mt-0 sm:ml-4">
                   <NuxtLink to="/admin/login">
-                    <CommonButton size="lg" variant="secondary" class="w-full px-8 py-3 text-base font-medium backdrop-blur-sm bg-white/10 dark:bg-slate-800/50 hover:bg-white/20 dark:hover:bg-slate-800/70 transform hover:scale-105 transition-all duration-300">Admin Login</CommonButton>
+                    <CommonButton size="lg" variant="secondary" class="w-full px-8 py-3 text-base font-medium backdrop-blur-sm bg-white/10 dark:bg-slate-800/50 hover:bg-white/20 dark:hover:bg-slate-800/70 transform hover:scale-105 transition-all duration-300">Login</CommonButton>
                   </NuxtLink>
                 </div>
               </div>
@@ -171,7 +171,7 @@
 
                 <!-- Action Button -->
                 <div class="mt-10">
-                  <NuxtLink :to="plan.price === 0 ? '/register' : '/register?plan=' + plan.name.toLowerCase()">
+                  <NuxtLink :to="plan.price === 0 ? '/auth' : '/auth?plan=' + plan.name.toLowerCase()">
                     <CommonButton 
                       :variant="index === 1 ? 'primary' : 'outline'" 
                       class="w-full py-4 text-base font-medium transform transition-all duration-300"
@@ -211,7 +211,7 @@
           Join hundreds of organizations streamlining their event management with Solutechify. Get started today and experience the difference.
         </p>
         <div class="mt-10 animate-fade-in-delayed-2">
-          <NuxtLink to="/register">
+          <NuxtLink to="/auth">
             <CommonButton 
               size="lg" 
               variant="secondary" 

@@ -2,15 +2,11 @@
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
+  
+  <!-- Global Notification Container -->
+  <CommonNotificationContainer />
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useAuthStore } from '~/stores/auth'
-
-const auth = useAuthStore()
-
-onMounted(() => {
-  auth.initAuth()
-})
+// Auth initialization is handled by layouts and middleware
 </script>

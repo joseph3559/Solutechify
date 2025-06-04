@@ -19,11 +19,41 @@ class AttendeeController extends Controller
 
     public function register(Request $request, Organization $organization, Event $event)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'required|string|max:20',
-        ]);
+        $user = auth()->user();
+        
+        if ($user) {
+            // Authenticated user registration
+            $validated = $request->validate([
+                'name' => 'nullable|string|max:255',
+                'email' => 'nullable|email',
+                'phone' => 'nullable|string|max:20',
+            ]);
+            
+            // Use user data as defaults
+            $validated['name'] = $validated['name'] ?? $user->name;
+            $validated['email'] = $validated['email'] ?? $user->email;
+            $validated['phone'] = $validated['phone'] ?? $user->phone;
+            $validated['user_id'] = $user->id;
+            
+            // Check if user is already registered
+            $existingRegistration = Attendee::where('event_id', $event->id)
+                ->where('user_id', $user->id)
+                ->where('status', 'registered')
+                ->first();
+                
+            if ($existingRegistration) {
+                return response()->json([
+                    'message' => 'You are already registered for this event'
+                ], 422);
+            }
+        } else {
+            // Guest registration
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email',
+                'phone' => 'required|string|max:20',
+            ]);
+        }
 
         try {
             $result = DB::transaction(function () use ($event, $validated) {

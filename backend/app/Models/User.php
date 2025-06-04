@@ -24,6 +24,7 @@ class User extends Authenticatable
         'password',
         'role',
         'organization_id',
+        'phone',
     ];
 
     /**
@@ -54,9 +55,20 @@ class User extends Authenticatable
         return $this->belongsTo(Organization::class);
     }
 
+    public function attendees()
+    {
+        return $this->hasMany(Attendee::class);
+    }
+
+    public function registeredEvents()
+    {
+        return $this->hasManyThrough(Event::class, Attendee::class, 'user_id', 'id', 'id', 'event_id')
+                    ->where('attendees.status', 'registered');
+    }
+
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return in_array($this->role, ['admin', 'super_admin', 'organizer']);
     }
 
     public function scopeAdmins($query)

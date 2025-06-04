@@ -63,6 +63,31 @@ class EventController extends Controller
         return response()->json(null, 204);
     }
 
+    /**
+     * Display all active events for public viewing
+     */
+    public function publicIndex()
+    {
+        $events = Event::with('organization')
+            ->where('is_active', true)
+            ->orderBy('date')
+            ->get();
+        return response()->json($events);
+    }
+
+    /**
+     * Display a specific event by ID for public viewing
+     */
+    public function publicShowById(Event $event)
+    {
+        // Only show active events
+        if (!$event->is_active) {
+            return response()->json(['message' => 'Event not found'], 404);
+        }
+
+        return response()->json($event->load('organization'));
+    }
+
     public function publicEvents(Organization $organization)
     {
         $events = Event::where('organization_id', $organization->id)

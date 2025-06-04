@@ -129,26 +129,54 @@
 
             <!-- Desktop Auth Buttons -->
             <div class="hidden md:flex items-center space-x-4">
-              <template v-if="!isAuthenticated">
+              <template v-if="!authInitialized">
+                <!-- Loading state while auth initializes -->
+                <div class="flex items-center space-x-4">
+                  <div class="w-16 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                  <div class="w-20 h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                </div>
+              </template>
+              <template v-else-if="!isAuthenticated">
                 <NuxtLink 
-                  to="/login"
+                  to="/auth"
                   class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                 >
                   Sign In
                 </NuxtLink>
                 <NuxtLink 
-                  to="/register"
+                  to="/auth"
                   class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                 >
                   Get Started
                 </NuxtLink>
               </template>
               <template v-else>
+                <div class="text-sm text-gray-600 dark:text-gray-300">
+                  Welcome, <span class="font-medium text-gray-900 dark:text-white">{{ currentUser?.name }}</span>
+                  <span class="ml-2 px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                    {{ currentUser?.role }}
+                  </span>
+                </div>
+                <NuxtLink 
+                  :to="isAdmin ? '/admin/dashboard' : '/user/dashboard'"
+                  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                >
+                  Dashboard
+                </NuxtLink>
+                <NuxtLink 
+                  to="/events"
+                  class="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+                >
+                  Browse Events
+                </NuxtLink>
                 <div class="relative" @mouseenter="showUserMenu = true" @mouseleave="showUserMenu = false">
                   <button 
                     class="flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
                   >
-                    {{ currentUser?.name }}
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Profile
                     <svg class="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
@@ -163,18 +191,9 @@
                     leave-to-class="transform scale-95 opacity-0"
                   >
                     <div v-if="showUserMenu" class="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-slate-800 ring-1 ring-black ring-opacity-5">
-                      <NuxtLink 
-                        to="/dashboard"
-                        class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700"
-                      >
-                        Dashboard
-                      </NuxtLink>
-                      <NuxtLink 
-                        to="/profile"
-                        class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700"
-                      >
-                        Profile
-                      </NuxtLink>
+                      <div class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 border-b dark:border-slate-700">
+                        {{ currentUser?.email }}
+                      </div>
                       <button 
                         @click="handleLogout"
                         class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700"
@@ -281,35 +300,48 @@
                 Contact
               </NuxtLink>
               <div class="pt-4 pb-3 border-t border-gray-200 dark:border-slate-700">
-                <template v-if="!isAuthenticated">
+                <template v-if="!authInitialized">
+                  <!-- Loading state while auth initializes -->
+                  <div class="px-3 py-2">
+                    <div class="w-full h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
+                    <div class="w-full h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                  </div>
+                </template>
+                <template v-else-if="!isAuthenticated">
                   <NuxtLink 
-                    to="/login"
+                    to="/auth"
                     class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
                   >
                     Sign In
                   </NuxtLink>
                   <NuxtLink 
-                    to="/register"
+                    to="/auth"
                     class="block px-3 py-2 rounded-md text-base font-medium bg-blue-600 text-white hover:bg-blue-700 mt-2"
                   >
                     Get Started
                   </NuxtLink>
                 </template>
                 <template v-else>
-                  <div class="px-3 py-2 text-base font-medium text-gray-600 dark:text-gray-300">
-                    {{ currentUser?.name }}
+                  <div class="px-3 py-2 border-b border-gray-200 dark:border-slate-700 mb-2">
+                    <div class="text-base font-medium text-gray-900 dark:text-white">{{ currentUser?.name }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">{{ currentUser?.email }}</div>
+                    <div class="mt-1">
+                      <span class="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        {{ currentUser?.role }}
+                      </span>
+                    </div>
                   </div>
                   <NuxtLink 
-                    to="/dashboard"
+                    :to="isAdmin ? '/admin/dashboard' : '/user/dashboard'"
                     class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
                   >
                     Dashboard
                   </NuxtLink>
                   <NuxtLink 
-                    to="/profile"
+                    to="/events"
                     class="block px-3 py-2 rounded-md text-base font-medium text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-slate-800"
                   >
-                    Profile
+                    Browse Events
                   </NuxtLink>
                   <button 
                     @click="handleLogout"
@@ -354,6 +386,7 @@ const isMobileMenuOpen = ref(false)
 const showFeaturesMenu = ref(false)
 const showMobileFeaturesMenu = ref(false)
 const showUserMenu = ref(false)
+const authInitialized = ref(false)
 
 // Computed properties
 const isAuthenticated = computed(() => authStore.isAuthenticated)
@@ -385,8 +418,9 @@ const handleLogout = async () => {
 }
 
 // Initialize authentication state
-onMounted(() => {
-  authStore.initAuth()
+onMounted(async () => {
+  await authStore.initAuth()
+  authInitialized.value = true
 })
 </script>
 

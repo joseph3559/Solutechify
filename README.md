@@ -622,7 +622,7 @@ When reporting bugs, please include:
 
 <div align="center">
 
-**Built with ❤️ by [Your Name](https://github.com/your-username)**
+**Built with ❤️ by [Joseph Maina](https://github.com/joseph3559)**
 
 ⭐ **Star this repository if it helped you!** ⭐
 

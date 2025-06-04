@@ -25,13 +25,6 @@ class AuthController extends Controller
             ]);
         }
 
-        // Only allow admin users to login
-        if (!$user->isAdmin()) {
-            return response()->json([
-                'message' => 'Unauthorized. Only admin users can login.',
-            ], 403);
-        }
-
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
@@ -46,6 +39,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'role' => 'nullable|in:user,admin,organizer',
             'organization_id' => 'nullable|exists:organizations,id',
         ]);
 
@@ -65,7 +59,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'admin',
+            'role' => $request->role ?? 'user', // Default to 'user' role
             'organization_id' => $organizationId,
         ]);
 

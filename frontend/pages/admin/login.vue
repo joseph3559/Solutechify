@@ -7,7 +7,7 @@
             <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2L2 7v10c0 5.55 3.84 9.99 9 11 5.16-1.01 9-5.45 9-11V7l-10-5z"/>
             </svg>
-            <span class="text-2xl font-bold">SolutechifyEvents</span>
+            <span class="text-2xl font-bold">Solutechify Events</span>
           </NuxtLink>
         </div>
         

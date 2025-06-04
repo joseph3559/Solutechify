@@ -170,4 +170,4 @@ npm run preview
 - [GitHub Issues](https://github.com/yourusername/solutechify/issues)
 - [Laravel Documentation](https://laravel.com/docs/11.x)
 - [Nuxt 3 Documentation](https://nuxt.com/docs)
-- Email: support@solutechify.com 
+- Email: scottjoe3559@gmail.com 

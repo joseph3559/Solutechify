@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Organization;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class OrganizationController extends Controller
@@ -20,19 +23,48 @@ class OrganizationController extends Controller
         return response()->json($organizations);
     }
 
+    public function adminIndex()
+    {
+        // Admin endpoint - return all organizations
+        $organizations = Organization::withCount(['events', 'users'])
+            ->orderBy('name')
+            ->get();
+            
+        return response()->json($organizations);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'slug' => 'required|string|max:255|unique:organizations,slug',
+            'description' => 'nullable|string|max:1000',
+            'website' => 'nullable|url|max:255',
+            'contact_email' => 'nullable|email|max:255',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
+        try {
+            // Create organization
+            $organization = Organization::create([
+                'name' => $validated['name'],
+                'slug' => $validated['slug'],
+                'description' => $validated['description'] ?? null,
+                'website' => $validated['website'] ?? null,
+                'email' => $validated['contact_email'] ?? null,
+                'is_active' => true,
+            ]);
 
-        $organization = Organization::create($validated);
-        $organization->users()->attach(auth()->id());
+            return response()->json([
+                'message' => 'Organization created successfully',
+                'organization' => $organization
+            ], 201);
 
-        return response()->json($organization, 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to create organization',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show(Organization $organization)
@@ -51,10 +83,11 @@ class OrganizationController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'email' => 'required|email|max:255',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500',
         ]);
 
-        $validated['slug'] = Str::slug($validated['name']);
         $organization->update($validated);
 
         return response()->json($organization);

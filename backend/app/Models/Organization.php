@@ -18,6 +18,8 @@ class Organization extends Model
         'phone',
         'address',
         'logo',
+        'description',
+        'website',
         'is_active',
     ];
 
